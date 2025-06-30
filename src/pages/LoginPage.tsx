@@ -19,9 +19,9 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const onSubmit = (data: { email: string; password: string }) => {
-    console.log('Login data:', data);
-    // Simulate login then navigate
-    navigate('/');
+    localStorage.setItem('user', JSON.stringify(data));
+    alert('Signup successful!');
+    navigate('/Signup');
   };
 
   return (
