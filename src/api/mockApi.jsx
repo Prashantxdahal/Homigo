@@ -1,13 +1,13 @@
-import { User, Listing, Booking } from '../types';
+
 
 // Mock data
-const mockUsers: User[] = [
+const mockUsers = [
   { id: '1', name: 'Admin User', email: 'admin@homigo.com', role: 'admin' },
   { id: '2', name: 'John Doe', email: 'john@example.com', role: 'user' },
   { id: '3', name: 'Jane Smith', email: 'jane@example.com', role: 'user' },
 ];
 
-const mockListings: Listing[] = [
+const mockListings = [
   {
     id: '1',
     title: 'Cozy Downtown Apartment',
@@ -54,7 +54,7 @@ const mockListings: Listing[] = [
   },
 ];
 
-const mockBookings: Booking[] = [
+const mockBookings = [
   {
     id: '1',
     listingId: '1',
@@ -78,11 +78,11 @@ const mockBookings: Booking[] = [
 ];
 
 // Helper function to simulate API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Authentication API
 export const authApi = {
-  async login(email: string, password: string): Promise<{ user: User; token: string } | null> {
+  async login(email, password) {
     await delay(500);
     const user = mockUsers.find(u => u.email === email);
     if (user && password === 'password123') {
@@ -91,12 +91,12 @@ export const authApi = {
     return null;
   },
 
-  async register(name: string, email: string, password: string): Promise<{ user: User; token: string } | null> {
+  async register(name, email, password) {
     await delay(500);
     const existingUser = mockUsers.find(u => u.email === email);
     if (existingUser) return null;
 
-    const newUser: User = {
+    const newUser = {
       id: Date.now().toString(),
       name,
       email,
@@ -109,19 +109,19 @@ export const authApi = {
 
 // Listings API
 export const listingsApi = {
-  async getListings(): Promise<Listing[]> {
+  async getListings() {
     await delay(300);
     return [...mockListings];
   },
 
-  async getListing(id: string): Promise<Listing | null> {
+  async getListing(id) {
     await delay(300);
     return mockListings.find(l => l.id === id) || null;
   },
 
-  async addListing(listing: Omit<Listing, 'id' | 'createdAt'>): Promise<Listing> {
+  async addListing(listing) {
     await delay(500);
-    const newListing: Listing = {
+    const newListing = {
       ...listing,
       id: Date.now().toString(),
       createdAt: new Date().toISOString().split('T')[0],
@@ -130,7 +130,7 @@ export const listingsApi = {
     return newListing;
   },
 
-  async updateListing(id: string, updates: Partial<Listing>): Promise<Listing | null> {
+  async updateListing(id, updates) {
     await delay(500);
     const index = mockListings.findIndex(l => l.id === id);
     if (index === -1) return null;
@@ -138,7 +138,7 @@ export const listingsApi = {
     return mockListings[index];
   },
 
-  async deleteListing(id: string): Promise<boolean> {
+  async deleteListing(id) {
     await delay(500);
     const index = mockListings.findIndex(l => l.id === id);
     if (index === -1) return false;
@@ -146,7 +146,7 @@ export const listingsApi = {
     return true;
   },
 
-  async getListingsByHost(hostId: string): Promise<Listing[]> {
+  async getListingsByHost(hostId) {
     await delay(300);
     return mockListings.filter(l => l.hostId === hostId);
   }
@@ -154,7 +154,7 @@ export const listingsApi = {
 
 // Bookings API
 export const bookingsApi = {
-  async getBookings(): Promise<Booking[]> {
+  async getBookings() {
     await delay(300);
     return mockBookings.map(booking => ({
       ...booking,
@@ -162,7 +162,7 @@ export const bookingsApi = {
     }));
   },
 
-  async getBookingsByUser(userId: string): Promise<Booking[]> {
+  async getBookingsByUser(userId) {
     await delay(300);
     return mockBookings
       .filter(b => b.userId === userId)
@@ -172,9 +172,9 @@ export const bookingsApi = {
       }));
   },
 
-  async createBooking(booking: Omit<Booking, 'id' | 'createdAt'>): Promise<Booking> {
+  async createBooking(booking) {
     await delay(500);
-    const newBooking: Booking = {
+    const newBooking = {
       ...booking,
       id: Date.now().toString(),
       createdAt: new Date().toISOString().split('T')[0],
@@ -183,7 +183,7 @@ export const bookingsApi = {
     return newBooking;
   },
 
-  async deleteBooking(id: string): Promise<boolean> {
+  async deleteBooking(id) {
     await delay(500);
     const index = mockBookings.findIndex(b => b.id === id);
     if (index === -1) return false;
@@ -194,12 +194,12 @@ export const bookingsApi = {
 
 // Users API
 export const usersApi = {
-  async getUsers(): Promise<User[]> {
+  async getUsers() {
     await delay(300);
     return [...mockUsers];
   },
 
-  async deleteUser(id: string): Promise<boolean> {
+  async deleteUser(id) {
     await delay(500);
     const index = mockUsers.findIndex(u => u.id === id);
     if (index === -1) return false;

@@ -1,44 +1,79 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { listingsApi } from '../api/backendApi';
+import { listingsApi } from '../api/backendApi.jsx';
 import { MapPin, DollarSign, Home, FileText, Image, Plus, X, Upload, Eye } from 'lucide-react';
 
-interface ImageData {
-  file: File | null;
-  preview: string;
-  url: string;
-}
-
-const AddListing: React.FC = () => {
+const AddListing = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { id } = useParams(); // Get listing ID from URL for edit mode
+  const isEditMode = Boolean(id);
   const [loading, setLoading] = useState(false);
+  const [loadingListing, setLoadingListing] = useState(isEditMode);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     price: '',
     location: '',
-    images: [{ file: null, preview: '', url: '' }] as ImageData[],
+    images: [{ file: null, preview: '', url: '' }],
     amenities: [''],
   });
 
+  // Load existing listing data for edit mode
+  useEffect(() => {
+    if (isEditMode && id) {
+      loadListingData();
+    }
+  }, [id, isEditMode]);
+
+  const loadListingData = async () => {
+    try {
+      setLoadingListing(true);
+      const listing = await listingsApi.getListing(id);
+      
+      // Check if user owns this listing
+      if (listing.host_id !== parseInt(user.id)) {
+        alert('You can only edit your own listings');
+        navigate('/my-listings');
+        return;
+      }
+
+      setFormData({
+        title: listing.title || '',
+        description: listing.description || '',
+        price: listing.price?.toString() || '',
+        location: listing.location || '',
+        images: listing.images?.length > 0 
+          ? listing.images.map(url => ({ file: null, preview: '', url }))
+          : [{ file: null, preview: '', url: '' }],
+        amenities: listing.amenities?.length > 0 ? listing.amenities : [''],
+      });
+    } catch (error) {
+      console.error('Error loading listing:', error);
+      alert('Error loading listing data');
+      navigate('/my-listings');
+    } finally {
+      setLoadingListing(false);
+    }
+  };
+
   // Convert file to base64 for preview
-  const convertToBase64 = (file: File): Promise<string> => {
+  const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result as string);
+      reader.onload = () => resolve(reader.result);
       reader.onerror = error => reject(error);
     });
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageFileChange = async (index: number, file: File | null) => {
+  const handleImageFileChange = async (index, file) => {
     if (!file) return;
     
     try {
@@ -55,18 +90,18 @@ const AddListing: React.FC = () => {
   const addImageField = () => {
     setFormData(prev => ({ 
       ...prev, 
-      images: [...prev.images, { file: null, preview: '', url: '' }] as ImageData[]
+      images: [...prev.images, { file: null, preview: '', url: '' }]
     }));
   };
 
-  const removeImageField = (index: number) => {
+  const removeImageField = (index) => {
     if (formData.images.length > 1) {
       const newImages = formData.images.filter((_, i) => i !== index);
       setFormData(prev => ({ ...prev, images: newImages }));
     }
   };
 
-  const handleAmenityChange = (index: number, value: string) => {
+  const handleAmenityChange = (index, value) => {
     const newAmenities = [...formData.amenities];
     newAmenities[index] = value;
     setFormData(prev => ({ ...prev, amenities: newAmenities }));
@@ -76,14 +111,14 @@ const AddListing: React.FC = () => {
     setFormData(prev => ({ ...prev, amenities: [...prev.amenities, ''] }));
   };
 
-  const removeAmenityField = (index: number) => {
+  const removeAmenityField = (index) => {
     if (formData.amenities.length > 1) {
       const newAmenities = formData.amenities.filter((_, i) => i !== index);
       setFormData(prev => ({ ...prev, amenities: newAmenities }));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!user) return;
@@ -111,7 +146,12 @@ const AddListing: React.FC = () => {
         img.file ? img.preview : img.url
       );
 
-      await listingsApi.addListing({
+      // Ensure we have a valid user
+      if (!user || !user.id) {
+        throw new Error('User not authenticated');
+      }
+
+      const listingData = {
         title: formData.title,
         description: formData.description,
         price: parseInt(formData.price),
@@ -120,24 +160,62 @@ const AddListing: React.FC = () => {
         amenities: validAmenities,
         hostId: user.id,
         hostName: user.name,
-      });
+        ...(isEditMode ? {} : { createdAt: new Date().toISOString() })
+      };
 
-      alert('Listing created successfully!');
+      console.log(`${isEditMode ? 'Updating' : 'Creating'} listing with data:`, listingData);
+      
+      let response;
+      if (isEditMode) {
+        response = await listingsApi.updateListing(id, listingData);
+        alert('Listing updated successfully!');
+      } else {
+        response = await listingsApi.addListing(listingData);
+        alert('Listing created successfully!');
+      }
+
       navigate('/my-listings');
     } catch (error) {
-      console.error('Error creating listing:', error);
-      alert('Failed to create listing. Please try again.');
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} listing:`, error);
+      let errorMessage = `Failed to ${isEditMode ? 'update' : 'create'} listing. `;
+      if (error.message.includes('User not authenticated')) {
+        errorMessage += 'Please ensure you are logged in.';
+      } else if (error.response) {
+        errorMessage += error.response.data?.message || 'Please try again.';
+      } else {
+        errorMessage += 'Please check your connection and try again.';
+      }
+      alert(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
+  if (loadingListing) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <p className="text-gray-600">Loading listing data...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Add New Listing</h1>
-          <p className="text-gray-600 mt-2">Create a new property listing for guests to discover</p>
+          <h1 className="text-3xl font-bold text-gray-900">
+            {isEditMode ? 'Edit Listing' : 'Add New Listing'}
+          </h1>
+          <p className="text-gray-600 mt-2">
+            {isEditMode 
+              ? 'Update your property listing details' 
+              : 'Create a new property listing for guests to discover'
+            }
+          </p>
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-6">

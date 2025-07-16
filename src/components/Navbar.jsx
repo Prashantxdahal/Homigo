@@ -5,7 +5,7 @@ import { useMode } from '../contexts/ModeContext';
 import { Home, Settings, LogOut, Menu, X } from 'lucide-react';
 import ProfilePicture from './ProfilePicture';
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const { user, logout } = useAuth();
   const { mode, toggleMode } = useMode();
   const navigate = useNavigate();

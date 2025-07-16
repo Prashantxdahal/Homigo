@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Star, Users, Shield } from 'lucide-react';
-import { listingsApi } from '../api/mockApi';
-import { Listing } from '../types';
+import { listingsApi } from '../api/backendApi.jsx';
 import ListingCard from '../components/ListingCard';
 
-const Home: React.FC = () => {
-  const [featuredListings, setFeaturedListings] = useState<Listing[]>([]);
+const Home = () => {
+  console.log('Home component rendered');
+  const [featuredListings, setFeaturedListings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

@@ -1,28 +1,31 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, Star } from 'lucide-react';
-import { Listing } from '../types';
+import { MapPin, Star, Edit, Calendar } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { useMode } from '../contexts/ModeContext';
 
-interface ListingCardProps {
-  listing: Listing;
-  showActions?: boolean;
-  onEdit?: (id: string) => void;
-  onDelete?: (id: string) => void;
-}
-
-const ListingCard: React.FC<ListingCardProps> = ({ 
-  listing, 
-  showActions = false, 
-  onEdit, 
-  onDelete 
-}) => {
+const ListingCard = ({ listing, showActions = false, onEdit, onDelete }) => {
+  const { user } = useAuth();
+  const { mode } = useMode();
+  
+  // Check if current user owns this listing
+  const isOwner = user && listing.host_id === parseInt(user.id);
+  
+  // Show edit button if user is owner OR in host mode
+  const showEditButton = isOwner || (mode === 'host' && user);
+  
+  // Show book button if user is logged in and NOT the owner
+  const showBookButton = user && !isOwner;
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-200">
       <div className="relative">
         <img
-          src={listing.images[0]}
+          src={listing.images?.[0] || 'https://via.placeholder.com/400x300?text=No+Image'}
           alt={listing.title}
           className="w-full h-48 object-cover"
+          onError={(e) => {
+            e.target.src = 'https://via.placeholder.com/400x300?text=Error+Loading+Image';
+          }}
         />
         <div className="absolute top-2 right-2 bg-white px-2 py-1 rounded-md shadow-sm">
           <div className="flex items-center space-x-1">
@@ -75,6 +78,30 @@ const ListingCard: React.FC<ListingCardProps> = ({
           >
             View Details
           </Link>
+
+          <div className="flex space-x-2">
+            {/* Edit button for owners or host mode */}
+            {showEditButton && (
+              <Link
+                to={`/edit-listing/${listing.id}`}
+                className="flex items-center space-x-1 bg-green-600 text-white px-3 py-2 rounded-md hover:bg-green-700 transition-colors duration-200 text-sm font-medium"
+              >
+                <Edit className="h-4 w-4" />
+                <span>Edit</span>
+              </Link>
+            )}
+            
+            {/* Book button for non-owners */}
+            {showBookButton && (
+              <Link
+                to={`/listing/${listing.id}?book=true`}
+                className="flex items-center space-x-1 bg-orange-600 text-white px-3 py-2 rounded-md hover:bg-orange-700 transition-colors duration-200 text-sm font-medium"
+              >
+                <Calendar className="h-4 w-4" />
+                <span>Book Now</span>
+              </Link>
+            )}
+          </div>
 
           {showActions && (
             <div className="flex space-x-2">

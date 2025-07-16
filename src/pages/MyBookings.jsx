@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, CreditCard } from 'lucide-react';
 import { bookingsApi } from '../api/mockApi';
 import { useAuth } from '../contexts/AuthContext';
-import { Booking } from '../types';
 import BookingCard from '../components/BookingCard';
 
-const MyBookings: React.FC = () => {
+const MyBookings = () => {
   const { user } = useAuth();
-  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,7 +26,7 @@ const MyBookings: React.FC = () => {
     fetchBookings();
   }, [user]);
 
-  const handleCancelBooking = async (id: string) => {
+  const handleCancelBooking = async (id) => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) {
       return;
     }

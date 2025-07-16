@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Trash2, Search, Shield, User as UserIcon } from 'lucide-react';
 import { usersApi } from '../../api/mockApi';
-import { User } from '../../types';
 
-const AdminUsers: React.FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+const AdminUsers = () => {
+  const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -33,7 +32,7 @@ const AdminUsers: React.FC = () => {
     setFilteredUsers(filtered);
   }, [users, searchTerm]);
 
-  const handleDeleteUser = async (id: string) => {
+  const handleDeleteUser = async (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) {
       return;
     }

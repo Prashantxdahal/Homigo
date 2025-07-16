@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Home, Trash2, Search, MapPin, DollarSign } from 'lucide-react';
 import { listingsApi } from '../../api/mockApi';
-import { Listing } from '../../types';
 
-const AdminListings: React.FC = () => {
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
+const AdminListings = () => {
+  const [listings, setListings] = useState([]);
+  const [filteredListings, setFilteredListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -34,7 +33,7 @@ const AdminListings: React.FC = () => {
     setFilteredListings(filtered);
   }, [listings, searchTerm]);
 
-  const handleDeleteListing = async (id: string) => {
+  const handleDeleteListing = async (id) => {
     if (!window.confirm('Are you sure you want to delete this listing?')) {
       return;
     }

@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Home, Calendar, DollarSign, TrendingUp, MapPin } from 'lucide-react';
 import { usersApi, listingsApi, bookingsApi } from '../../api/mockApi';
-import { User, Listing, Booking } from '../../types';
 
-const AdminDashboard: React.FC = () => {
+const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalListings: 0,
     totalBookings: 0,
     totalRevenue: 0,
   });
-  const [recentBookings, setRecentBookings] = useState<Booking[]>([]);
+  const [recentBookings, setRecentBookings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

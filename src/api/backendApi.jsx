@@ -3,20 +3,18 @@
  * Connects to the PostgreSQL backend API
  */
 
-import { User, Listing, Booking } from '../types';
-
 const API_BASE_URL = 'http://localhost:5000/api';
 
 // Helper function to get auth token
-const getAuthToken = (): string | null => {
+const getAuthToken = () => {
   return localStorage.getItem('token');
 };
 
 // Helper function to make authenticated API calls
-const apiCall = async (endpoint: string, options: RequestInit = {}): Promise<any> => {
+const apiCall = async (endpoint, options = {}) => {
   const token = getAuthToken();
   
-  const config: RequestInit = {
+  const config = {
     headers: {
       'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
@@ -37,7 +35,7 @@ const apiCall = async (endpoint: string, options: RequestInit = {}): Promise<any
 
 // Auth API
 export const authApi = {
-  login: async (email: string, password: string) => {
+  login: async (email, password) => {
     const response = await apiCall('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
@@ -45,7 +43,7 @@ export const authApi = {
     return response;
   },
 
-  register: async (name: string, email: string, password: string, role: string = 'guest') => {
+  register: async (name, email, password, role = 'guest') => {
     const response = await apiCall('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name, email, password, role }),
@@ -61,12 +59,12 @@ export const authApi = {
 
 // Users API
 export const usersApi = {
-  getProfile: async (userId: string) => {
+  getProfile: async (userId) => {
     const response = await apiCall(`/users/${userId}`);
     return response.data.user;
   },
 
-  updateProfile: async (userId: string, profileData: { name?: string; email?: string; bio?: string }) => {
+  updateProfile: async (userId, profileData) => {
     const response = await apiCall(`/users/${userId}`, {
       method: 'PUT',
       body: JSON.stringify(profileData),
@@ -74,7 +72,7 @@ export const usersApi = {
     return response.data.user;
   },
 
-  changePassword: async (userId: string, passwordData: { currentPassword: string; newPassword: string }) => {
+  changePassword: async (userId, passwordData) => {
     const response = await apiCall(`/users/change-password`, {
       method: 'PUT',
       body: JSON.stringify(passwordData),
@@ -86,15 +84,7 @@ export const usersApi = {
 // Listings API
 export const listingsApi = {
   // Get all active listings with optional filters
-  getListings: async (filters: {
-    page?: number;
-    limit?: number;
-    location?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    sortBy?: string;
-    sortOrder?: string;
-  } = {}) => {
+  getListings: async (filters = {}) => {
     const queryParams = new URLSearchParams();
     
     Object.entries(filters).forEach(([key, value]) => {
@@ -107,7 +97,7 @@ export const listingsApi = {
     const response = await apiCall(endpoint);
     
     // Transform API response to match frontend interface
-    const listings: Listing[] = response.data.listings.map((listing: any) => ({
+    const listings = response.data.listings.map(listing => ({
       id: listing.id.toString(),
       title: listing.title,
       description: listing.description,
@@ -127,7 +117,7 @@ export const listingsApi = {
   },
 
   // Get specific listing by ID
-  getListing: async (listingId: string): Promise<Listing> => {
+  getListing: async (listingId) => {
     const response = await apiCall(`/listings/${listingId}`);
     const listing = response.data.listing;
     
@@ -146,16 +136,7 @@ export const listingsApi = {
   },
 
   // Add new listing
-  addListing: async (listingData: {
-    title: string;
-    description: string;
-    price: number;
-    location: string;
-    images: string[];
-    amenities: string[];
-    hostId: string;
-    hostName: string;
-  }) => {
+  addListing: async (listingData) => {
     const response = await apiCall('/listings', {
       method: 'POST',
       body: JSON.stringify({
@@ -184,15 +165,7 @@ export const listingsApi = {
   },
 
   // Update listing
-  updateListing: async (listingId: string, listingData: Partial<{
-    title: string;
-    description: string;
-    price: number;
-    location: string;
-    images: string[];
-    amenities: string[];
-    status: string;
-  }>) => {
+  updateListing: async (listingId, listingData) => {
     const response = await apiCall(`/listings/${listingId}`, {
       method: 'PUT',
       body: JSON.stringify(listingData),
@@ -201,7 +174,7 @@ export const listingsApi = {
   },
 
   // Delete listing
-  deleteListing: async (listingId: string) => {
+  deleteListing: async (listingId) => {
     const response = await apiCall(`/listings/${listingId}`, {
       method: 'DELETE',
     });
@@ -209,37 +182,42 @@ export const listingsApi = {
   },
 
   // Get listings by host
-  getHostListings: async (hostId: string, status?: string) => {
-    const endpoint = `/listings/host/${hostId}${status ? `?status=${status}` : ''}`;
-    const response = await apiCall(endpoint);
-    
-    const listings: Listing[] = response.data.listings.map((listing: any) => ({
-      id: listing.id.toString(),
-      title: listing.title,
-      description: listing.description,
-      price: listing.price,
-      location: listing.location,
-      images: listing.images || [],
-      amenities: listing.amenities || [],
-      hostId: listing.host.id.toString(),
-      hostName: listing.host.name,
-      createdAt: new Date(listing.created_at).toISOString().split('T')[0],
-    }));
+  getListingsByHost: async (hostId) => {
+    try {
+      console.log('Fetching listings for host:', hostId);
+      const response = await apiCall(`/listings/host/${hostId}`);
+      console.log('API Response:', response);
+      
+      if (!response.data || !response.data.listings) {
+        console.error('Invalid API response format:', response);
+        return [];
+      }
 
-    return listings;
+      const listings = response.data.listings.map(listing => ({
+        id: listing.id.toString(),
+        title: listing.title,
+        description: listing.description,
+        price: listing.price,
+        location: listing.location,
+        images: listing.images || [],
+        amenities: listing.amenities || [],
+        hostId: listing.host.id.toString(),
+        hostName: listing.host.name,
+        createdAt: new Date(listing.created_at).toISOString().split('T')[0],
+      }));
+
+      return listings;
+    } catch (error) {
+      console.error('Error fetching host listings:', error);
+      throw error;
+    }
   },
 };
 
 // Bookings API
 export const bookingsApi = {
   // Create new booking
-  createBooking: async (bookingData: {
-    listingId: string;
-    checkIn: string;
-    checkOut: string;
-    guests: number;
-    totalPrice: number;
-  }) => {
+  createBooking: async (bookingData) => {
     const response = await apiCall('/bookings', {
       method: 'POST',
       body: JSON.stringify({
@@ -267,10 +245,10 @@ export const bookingsApi = {
   },
 
   // Get user's bookings
-  getUserBookings: async (userId: string): Promise<Booking[]> => {
+  getUserBookings: async (userId) => {
     const response = await apiCall(`/bookings/${userId}`);
     
-    return response.data.bookings.map((booking: any) => ({
+    return response.data.bookings.map(booking => ({
       id: booking.id.toString(),
       listingId: booking.listing.id.toString(),
       listingTitle: booking.listing.title,
@@ -286,7 +264,7 @@ export const bookingsApi = {
   },
 
   // Update booking status
-  updateBookingStatus: async (bookingId: string, status: string) => {
+  updateBookingStatus: async (bookingId, status) => {
     const response = await apiCall(`/bookings/${bookingId}/status`, {
       method: 'PUT',
       body: JSON.stringify({ status }),
@@ -295,10 +273,10 @@ export const bookingsApi = {
   },
 
   // Get bookings for a listing (host only)
-  getListingBookings: async (listingId: string) => {
+  getListingBookings: async (listingId) => {
     const response = await apiCall(`/bookings/listing/${listingId}`);
     
-    return response.data.bookings.map((booking: any) => ({
+    return response.data.bookings.map(booking => ({
       id: booking.id.toString(),
       guestName: booking.guest.name,
       guestEmail: booking.guest.email,

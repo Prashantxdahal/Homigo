@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Trash2, Search, MapPin, CreditCard, Filter } from 'lucide-react';
 import { bookingsApi } from '../../api/mockApi';
-import { Booking } from '../../types';
 
-const AdminBookings: React.FC = () => {
-  const [bookings, setBookings] = useState<Booking[]>([]);
-  const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
+const AdminBookings = () => {
+  const [bookings, setBookings] = useState([]);
+  const [filteredBookings, setFilteredBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -46,7 +45,7 @@ const AdminBookings: React.FC = () => {
     setFilteredBookings(filtered);
   }, [bookings, searchTerm, statusFilter]);
 
-  const handleDeleteBooking = async (id: string) => {
+  const handleDeleteBooking = async (id) => {
     if (!window.confirm('Are you sure you want to delete this booking?')) {
       return;
     }
@@ -62,7 +61,7 @@ const AdminBookings: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'confirmed':
         return 'bg-green-100 text-green-800';

@@ -3,8 +3,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, Eye, EyeOff, Lock, Save, Upload } from 'lucide-react';
 import ProfilePicture from '../components/ProfilePicture';
 
-const Settings: React.FC = () => {
-  const { user } = useAuth();
+const Settings = () => {
+  const { user, updateUser } = useAuth();
   
   // Profile state
   const [profile, setProfile] = useState({
@@ -13,8 +13,8 @@ const Settings: React.FC = () => {
     bio: '',
     profile_picture: ''
   });
-  const [profilePictureFile, setProfilePictureFile] = useState<File | null>(null);
-  const [profilePicturePreview, setProfilePicturePreview] = useState<string>('');
+  const [profilePictureFile, setProfilePictureFile] = useState(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState('');
   
   // Password security state
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -52,11 +52,11 @@ const Settings: React.FC = () => {
     }
   }, [user]);
 
-  const handleProfileChange = (field: keyof typeof profile, value: string) => {
+  const handleProfileChange = (field, value) => {
     setProfile(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePictureChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
       // Check file size (limit to 5MB)
@@ -76,7 +76,7 @@ const Settings: React.FC = () => {
       // Create preview URL
       const reader = new FileReader();
       reader.onload = (e) => {
-        const result = e.target?.result as string;
+        const result = e.target?.result;
         setProfilePicturePreview(result);
       };
       reader.readAsDataURL(file);
@@ -89,7 +89,7 @@ const Settings: React.FC = () => {
     setProfile(prev => ({ ...prev, profile_picture: '' }));
   };
 
-  const togglePasswordVisibility = (field: 'current' | 'new' | 'confirm') => {
+  const togglePasswordVisibility = (field) => {
     setShowPasswords(prev => ({
       ...prev,
       [field]: !prev[field]
@@ -154,7 +154,7 @@ const Settings: React.FC = () => {
       } else {
         throw new Error(data.message || 'Failed to update password');
       }
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'An error occurred while updating password');
     } finally {
       setPasswordLoading(false);
@@ -214,18 +214,19 @@ const Settings: React.FC = () => {
       const data = await response.json();
 
       if (data.success) {
-        // Update local storage with new user data
-        const updatedUser = { 
-          ...user, 
+        // Update AuthContext with new user data
+        const updatedUserData = {
+          ...user,
           name: profile.name,
           email: profile.email,
           bio: profile.bio,
           profile_picture: profilePictureUrl
         };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
+        updateUser(updatedUserData);
         
         // Update profile state with the uploaded URL
         setProfile(prev => ({ ...prev, profile_picture: profilePictureUrl }));
+        setProfilePicturePreview(profilePictureUrl);
         setProfilePictureFile(null);
         
         setSuccess('Profile updated successfully!');
@@ -235,7 +236,7 @@ const Settings: React.FC = () => {
       } else {
         throw new Error(data.message || 'Failed to update profile');
       }
-    } catch (err: any) {
+    } catch (err) {
       setError(err.message || 'An error occurred while saving settings');
     } finally {
       setLoading(false);

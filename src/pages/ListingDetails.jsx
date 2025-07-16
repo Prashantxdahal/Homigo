@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { MapPin, Wifi, Car, Users, Calendar, Star } from 'lucide-react';
-import { listingsApi, bookingsApi } from '../api/mockApi';
+import { listingsApi, bookingsApi } from '../api/backendApi.jsx';
 import { useAuth } from '../contexts/AuthContext';
-import { Listing } from '../types';
 
-const ListingDetails: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const ListingDetails = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [listing, setListing] = useState<Listing | null>(null);
+  const [searchParams] = useSearchParams();
+  const shouldShowBooking = searchParams.get('book') === 'true';
+  const [listing, setListing] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bookingLoading, setBookingLoading] = useState(false);
   const [checkIn, setCheckIn] = useState('');
@@ -34,6 +35,18 @@ const ListingDetails: React.FC = () => {
     fetchListing();
   }, [id]);
 
+  // Scroll to booking section if book=true parameter is present
+  useEffect(() => {
+    if (shouldShowBooking && !loading && listing) {
+      setTimeout(() => {
+        const bookingSection = document.getElementById('booking-section');
+        if (bookingSection) {
+          bookingSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500);
+    }
+  }, [shouldShowBooking, loading, listing]);
+
   useEffect(() => {
     if (checkIn && checkOut && listing) {
       const startDate = new Date(checkIn);
@@ -49,7 +62,7 @@ const ListingDetails: React.FC = () => {
     }
   }, [checkIn, checkOut, listing]);
 
-  const getAmenityIcon = (amenity: string) => {
+  const getAmenityIcon = (amenity) => {
     switch (amenity.toLowerCase()) {
       case 'wifi':
         return <Wifi className="h-4 w-4" />;
@@ -137,9 +150,12 @@ const ListingDetails: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="md:col-span-2">
                   <img
-                    src={listing.images[0]}
+                    src={listing.images?.[0] || 'https://via.placeholder.com/800x600?text=No+Image'}
                     alt={listing.title}
                     className="w-full h-64 md:h-96 object-cover rounded-lg"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/800x600?text=Error+Loading+Image';
+                    }}
                   />
                 </div>
                 {listing.images.slice(1).map((image, index) => (
@@ -189,12 +205,17 @@ const ListingDetails: React.FC = () => {
 
           {/* Booking Card */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-lg p-6 sticky top-8">
+            <div id="booking-section" className="bg-white rounded-lg shadow-lg p-6 sticky top-8">
               <div className="mb-6">
                 <div className="flex items-baseline justify-between">
                   <span className="text-3xl font-bold text-[#003580]">${listing.price}</span>
                   <span className="text-gray-600">/night</span>
                 </div>
+                {shouldShowBooking && (
+                  <p className="text-green-600 text-sm mt-2 font-medium">
+                    📅 Ready to book this amazing place!
+                  </p>
+                )}
               </div>
 
               <div className="space-y-4 mb-6">

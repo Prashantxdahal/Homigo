@@ -49,6 +49,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/edit-listing/:id"
+                  element={
+                    <ProtectedRoute>
+                      <AddListing />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/my-listings"
                   element={
                     <ProtectedRoute>

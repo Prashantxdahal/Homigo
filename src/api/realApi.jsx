@@ -1,10 +1,10 @@
-import { User } from '../types';
+
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
 // Real API service for authentication
 export const realAuthApi = {
-  async login(email: string, password: string): Promise<{ user: User; token: string } | null> {
+  async login(email, password) {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -35,7 +35,7 @@ export const realAuthApi = {
     }
   },
 
-  async register(name: string, email: string, password: string): Promise<{ user: User; token: string } | null> {
+  async register(name, email, password) {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
@@ -71,7 +71,7 @@ export const realAuthApi = {
     }
   },
 
-  async validateToken(token: string): Promise<User | null> {
+  async validateToken(token) {
     try {
       const response = await fetch(`${API_BASE_URL}/users/profile`, {
         headers: {

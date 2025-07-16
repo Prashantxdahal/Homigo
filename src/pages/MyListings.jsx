@@ -1,25 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Plus, Home } from 'lucide-react';
-import { listingsApi } from '../api/mockApi';
+import { listingsApi } from '../api/backendApi.jsx';
 import { useAuth } from '../contexts/AuthContext';
-import { Listing } from '../types';
 import ListingCard from '../components/ListingCard';
 
-const MyListings: React.FC = () => {
+const MyListings = () => {
   const { user } = useAuth();
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchListings = async () => {
-      if (!user) return;
+      if (!user || !user.id) {
+        console.log('No user or user ID available');
+        return;
+      }
 
+      setLoading(true);
       try {
+        console.log('Fetching listings for host:', user.id);
         const data = await listingsApi.getListingsByHost(user.id);
-        setListings(data);
+        console.log('Fetched listings:', data);
+        
+        if (Array.isArray(data)) {
+          setListings(data);
+        } else {
+          console.error('Invalid listings data received:', data);
+          setListings([]);
+        }
       } catch (error) {
         console.error('Error fetching listings:', error);
+        setListings([]);
       } finally {
         setLoading(false);
       }
@@ -28,12 +40,12 @@ const MyListings: React.FC = () => {
     fetchListings();
   }, [user]);
 
-  const handleEdit = (id: string) => {
+  const handleEdit = (id) => {
     // In a real app, this would navigate to an edit page
     alert(`Edit functionality would navigate to edit page for listing ${id}`);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this listing?')) {
       return;
     }

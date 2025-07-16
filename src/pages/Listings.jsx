@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Filter, MapPin, DollarSign } from 'lucide-react';
-import { listingsApi } from '../api/mockApi';
-import { Listing } from '../types';
+import { listingsApi } from '../api/backendApi.jsx';
 import ListingCard from '../components/ListingCard';
 
-const Listings: React.FC = () => {
-  const [listings, setListings] = useState<Listing[]>([]);
-  const [filteredListings, setFilteredListings] = useState<Listing[]>([]);
+const Listings = () => {
+  // Helper function to validate listing data
+  const validateListing = (listing) => {
+    return listing && 
+           typeof listing === 'object' && 
+           'id' in listing && 
+           'title' in listing && 
+           'location' in listing && 
+           'price' in listing;
+  };
+  const [listings, setListings] = useState([]);
+  const [filteredListings, setFilteredListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [priceRange, setPriceRange] = useState({ min: '', max: '' });
@@ -15,11 +23,16 @@ const Listings: React.FC = () => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const data = await listingsApi.getListings();
-        setListings(data);
-        setFilteredListings(data);
+        const response = await listingsApi.getListings();
+        // Ensure we're getting the listings array from the response
+        const listingsData = response.data?.listings || [];
+        console.log('Fetched listings:', listingsData); // For debugging
+        setListings(listingsData);
+        setFilteredListings(listingsData);
       } catch (error) {
         console.error('Error fetching listings:', error);
+        setListings([]);
+        setFilteredListings([]);
       } finally {
         setLoading(false);
       }
@@ -29,15 +42,18 @@ const Listings: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    let filtered = listings;
+    let filtered = Array.isArray(listings) ? listings : [];
+
+    // Filter out invalid listings and then apply search
+    filtered = filtered.filter(validateListing);
 
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(
         (listing) =>
-          listing.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          listing.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          listing.description.toLowerCase().includes(searchTerm.toLowerCase())
+          (listing.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+          (listing.location?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+          (listing.description?.toLowerCase() || '').includes(searchTerm.toLowerCase())
       );
     }
 

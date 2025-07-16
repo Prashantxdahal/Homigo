@@ -1,15 +1,8 @@
 import React from 'react';
 import { Calendar, MapPin, CreditCard } from 'lucide-react';
-import { Booking } from '../types';
 
-interface BookingCardProps {
-  booking: Booking;
-  showActions?: boolean;
-  onCancel?: (id: string) => void;
-}
-
-const BookingCard: React.FC<BookingCardProps> = ({ booking, showActions = false, onCancel }) => {
-  const getStatusColor = (status: string) => {
+const BookingCard = ({ booking, showActions = false, onCancel }) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'confirmed':
         return 'bg-green-100 text-green-800';
