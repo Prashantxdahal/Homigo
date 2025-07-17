@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Search, Filter, MapPin, DollarSign } from 'lucide-react';
-import { listingsApi } from '../api/backendApi.jsx';
-import ListingCard from '../components/ListingCard';
+import React, { useState, useEffect } from "react";
+import { Search, Filter, MapPin, DollarSign } from "lucide-react";
+import { listingsApi } from "../api/realApi.jsx";
+import ListingCard from "../components/ListingCard";
 
 const Listings = () => {
   // Helper function to validate listing data

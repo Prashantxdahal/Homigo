@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { MapPin, Wifi, Car, Users, Calendar, Star } from 'lucide-react';
-import { listingsApi, bookingsApi } from '../api/backendApi.jsx';
-import { useAuth } from '../contexts/AuthContext';
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { MapPin, Wifi, Car, Users, Calendar, Star } from "lucide-react";
+import { listingsApi, bookingsApi } from "../api/realApi.jsx";
+import { useAuth } from "../contexts/AuthContext";
 
 const ListingDetails = () => {
   const { id } = useParams();

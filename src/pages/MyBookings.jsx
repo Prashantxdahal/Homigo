@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, CreditCard } from 'lucide-react';
-import { bookingsApi } from '../api/mockApi';
-import { useAuth } from '../contexts/AuthContext';
+import React, { useState, useEffect } from "react";
+import { Calendar, CreditCard } from "lucide-react";
+import { bookingsApi } from "../api/realApi.jsx";
+import { useAuth } from "../contexts/AuthContext";
 import BookingCard from '../components/BookingCard';
 
 const MyBookings = () => {

@@ -2,6 +2,141 @@
 
 const API_BASE_URL = 'http://localhost:5000/api';
 
+// Helper function to get auth token
+const getAuthToken = () => {
+  return localStorage.getItem('token');
+};
+
+// Helper function to make authenticated API calls
+const apiCall = async (endpoint, options = {}) => {
+  const token = getAuthToken();
+  
+  const config = {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` }),
+      ...options.headers,
+    },
+    ...options,
+  };
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ message: 'API Error' }));
+    throw new Error(error.message || `HTTP ${response.status}`);
+  }
+
+  return response.json();
+};
+
+// Listings API
+export const listingsApi = {
+  async getListings() {
+    const response = await apiCall('/listings');
+    return response.data.listings;
+  },
+
+  async getListing(id) {
+    const response = await apiCall(`/listings/${id}`);
+    return response.data.listing;
+  },
+
+  async createListing(listingData) {
+    const response = await apiCall('/listings', {
+      method: 'POST',
+      body: JSON.stringify(listingData),
+    });
+    return response.data.listing;
+  },
+
+  async updateListing(id, listingData) {
+    const response = await apiCall(`/listings/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(listingData),
+    });
+    return response.data.listing;
+  },
+
+  async deleteListing(id) {
+    await apiCall(`/listings/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  async getHostListings(hostId) {
+    const response = await apiCall(`/listings/host/${hostId}`);
+    return response.data.listings;
+  },
+};
+
+// Bookings API
+export const bookingsApi = {
+  async createBooking(bookingData) {
+    const response = await apiCall('/bookings', {
+      method: 'POST',
+      body: JSON.stringify(bookingData),
+    });
+    return response.data.booking;
+  },
+
+  async getUserBookings() {
+    const response = await apiCall('/bookings/user');
+    return response.data.bookings;
+  },
+
+  async getHostBookings() {
+    const response = await apiCall('/bookings/host');
+    return response.data.bookings;
+  },
+
+  async getAllBookings() {
+    const response = await apiCall('/bookings');
+    return response.data.bookings;
+  },
+
+  async updateBookingStatus(id, status) {
+    const response = await apiCall(`/bookings/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+    return response.data.booking;
+  },
+
+  async deleteBooking(id) {
+    await apiCall(`/bookings/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+// Users API
+export const usersApi = {
+  async getUsers() {
+    const response = await apiCall('/users');
+    return response.data.users;
+  },
+
+  async getUserProfile() {
+    const response = await apiCall('/users/profile');
+    return response.data.user;
+  },
+
+  async updateUserProfile(userData) {
+    const response = await apiCall('/users/profile', {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+    return response.data.user;
+  },
+
+  async deleteUser(id) {
+    await apiCall(`/users/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
 // Real API service for authentication
 export const realAuthApi = {
   async login(email, password) {

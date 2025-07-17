@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Star, Users, Shield } from 'lucide-react';
-import { listingsApi } from '../api/backendApi.jsx';
-import ListingCard from '../components/ListingCard';
+import { Link } from "react-router-dom";
+import { Search, Star, Users, Shield } from "lucide-react";
+import { listingsApi } from "../api/realApi.jsx";
+import ListingCard from "../components/ListingCard";
 
 const Home = () => {
   console.log('Home component rendered');

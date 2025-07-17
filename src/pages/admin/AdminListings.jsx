@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Home, Trash2, Search, MapPin, DollarSign } from 'lucide-react';
-import { listingsApi } from '../../api/mockApi';
+import React, { useState, useEffect } from "react";
+import { Home, Trash2, Search, MapPin, DollarSign } from "lucide-react";
+import { listingsApi } from "../../api/realApi.jsx";
 
 const AdminListings = () => {
   const [listings, setListings] = useState([]);

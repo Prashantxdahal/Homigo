@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Plus, Home } from 'lucide-react';
-import { listingsApi } from '../api/backendApi.jsx';
-import { useAuth } from '../contexts/AuthContext';
+import { Link } from "react-router-dom";
+import { Plus, Home } from "lucide-react";
+import { listingsApi } from "../api/realApi.jsx";
+import { useAuth } from "../contexts/AuthContext";
 import ListingCard from '../components/ListingCard';
 
 const MyListings = () => {

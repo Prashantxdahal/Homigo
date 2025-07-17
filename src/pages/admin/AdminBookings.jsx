@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Calendar, Trash2, Search, MapPin, CreditCard, Filter } from 'lucide-react';
-import { bookingsApi } from '../../api/mockApi';
+import React, { useState, useEffect } from "react";
+import { Calendar, Trash2, Search, MapPin, CreditCard, Filter } from "lucide-react";
+import { bookingsApi } from "../../api/realApi.jsx";
 
 const AdminBookings = () => {
   const [bookings, setBookings] = useState([]);

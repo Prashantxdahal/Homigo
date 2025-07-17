@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Users, Trash2, Search, Shield, User as UserIcon } from 'lucide-react';
-import { usersApi } from '../../api/mockApi';
+import React, { useState, useEffect } from "react";
+import { Users, Trash2, Search, Shield, User as UserIcon } from "lucide-react";
+import { usersApi } from "../../api/realApi.jsx";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
