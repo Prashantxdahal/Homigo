@@ -1,126 +1,61 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-import { Search, Star, Users, Shield, Home as HomeIcon } from "lucide-react";
+import { Search, Star, Users, Shield, Home as HomeIcon, Building2, Trophy, UserCheck } from "lucide-react";
+import { motion } from "framer-motion";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, MeshDistortMaterial } from "@react-three/drei";
 
-const Home = () => {
-  return (
-    <div className="min-h-screen bg-[#f6f8fa] flex flex-col">
-      {/* Header */}
-      <header className="w-full bg-[#003580] py-4 px-8 flex items-center justify-between sticky top-0 z-30 shadow-lg backdrop-blur-md bg-opacity-95">
-        <div className="flex items-center gap-2">
-          <HomeIcon className="h-8 w-8 text-white drop-shadow-lg" />
-          <span className="text-2xl font-bold text-white tracking-wide">Homigo</span>
-        </div>
-        <nav className="flex gap-8 font-medium">
-          <Link to="/listings" className="text-white hover:text-[#00bcd4] transition-colors duration-200">Listings</Link>
-          <Link to="/register" className="text-white hover:text-[#00bcd4] transition-colors duration-200">Become a Host</Link>
-          <Link to="/login" className="text-white hover:text-[#00bcd4] transition-colors duration-200">Login</Link>
-        </nav>
-      </header>
-
-      {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center bg-gradient-to-br from-[#003580] to-[#0071c2] h-[500px] w-full overflow-hidden">
-        <div className="relative z-20 w-full max-w-2xl mx-auto text-center px-4 flex flex-col items-center justify-center">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-3 drop-shadow-2xl">Find your perfect stay at Homigo</h1>
-          <p className="text-lg md:text-xl text-blue-100 mb-8 font-medium">Discover unique accommodations around Nepal and beyond</p>
-
-          {/* Search Bar */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-2 bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl px-4 py-3 w-full max-w-2xl mx-auto">
-            <input type="text" placeholder="Location" className="flex-1 px-4 py-2 rounded-md border focus:outline-none" />
-            <input type="text" placeholder="Property Type" className="flex-1 px-4 py-2 rounded-md border focus:outline-none" />
-            <input type="text" placeholder="Max Price (NRS)" className="flex-1 px-4 py-2 rounded-md border focus:outline-none" />
-            <button className="bg-[#003580] text-white px-6 py-2 rounded-md font-semibold flex items-center gap-2 hover:bg-[#0071c2] transition-transform transform hover:scale-105 shadow-md">
-              <Search className="h-5 w-5" />
-              Search
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div className="bg-white rounded-2xl shadow-lg p-10 flex flex-col items-center text-center border-t-4 border-[#003580]/40">
-            <Star className="h-12 w-12 text-[#003580]" />
-            <h3 className="text-xl font-bold mt-4 mb-2">Premium Quality</h3>
-            <p className="text-gray-500">All our listings are verified and meet our high standards for quality and comfort.</p>
-          </div>
-          <div className="bg-white rounded-2xl shadow-lg p-10 flex flex-col items-center text-center border-t-4 border-[#003580]/40">
-            <Users className="h-12 w-12 text-[#0071c2]" />
-            <h3 className="text-xl font-bold mt-4 mb-2">Trusted Community</h3>
-            <p className="text-gray-500">Join thousands of happy guests and hosts in our growing community.</p>
-          </div>
-          <div className="bg-white rounded-2xl shadow-lg p-10 flex flex-col items-center text-center border-t-4 border-[#003580]/40">
-            <Shield className="h-12 w-12 text-[#00bcd4]" />
-            <h3 className="text-xl font-bold mt-4 mb-2">Secure Booking</h3>
-            <p className="text-gray-500">Your payments and personal information are protected with industry-leading security.</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Listings */}
-      <section className="py-20 bg-gray-100">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-10">
-            <h2 className="text-3xl font-extrabold text-gray-900">Featured Listings</h2>
-            <Link to="/listings" className="text-[#003580] hover:text-[#0071c2] font-semibold">View All Listings →</Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-[#003580]">Cozy Apartment</h3>
-              <p className="text-gray-600">Near city center</p>
-              <span className="text-[#0071c2] font-semibold">NRS 2000</span>
-            </div>
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-[#003580]">Modern Villa</h3>
-              <p className="text-gray-600">With swimming pool</p>
-              <span className="text-[#0071c2] font-semibold">NRS 5000</span>
-            </div>
-            <div className="bg-white rounded-xl shadow-md p-6">
-              <h3 className="text-xl font-bold text-[#003580]">Mountain Retreat</h3>
-              <p className="text-gray-600">Peaceful and quiet</p>
-              <span className="text-[#0071c2] font-semibold">NRS 3500</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-to-br from-[#003580] to-[#0071c2] text-white py-20 relative overflow-hidden">
-        <div className="max-w-6xl mx-auto px-4 text-center relative z-10">
-          <h2 className="text-4xl font-extrabold mb-6">Ready to start your journey?</h2>
-          <p className="text-lg mb-10 text-blue-100 font-medium">Join millions of travelers who trust Homigo for their perfect stay</p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link to="/listings" className="bg-white text-[#003580] px-10 py-4 rounded-md font-semibold hover:bg-gray-100 transition-all duration-300 shadow-xl transform hover:scale-105">
-              Find a Place
-            </Link>
-            <Link to="/register" className="bg-transparent border-2 border-white text-white px-10 py-4 rounded-md font-semibold hover:bg-white hover:text-[#003580] transition-all duration-300 transform hover:scale-105">
-              Become a Host
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-[#003580] border-t py-10 mt-auto">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <HomeIcon className="h-6 w-6 text-white drop-shadow-lg" />
-            <span className="text-lg font-bold text-white tracking-wide">Homigo</span>
-          </div>
-          <nav className="flex gap-8 font-medium">
-            <Link to="/listings" className="text-white text-sm hover:text-[#00bcd4] transition-colors duration-200">Listings</Link>
-            <Link to="/register" className="text-white text-sm hover:text-[#00bcd4] transition-colors duration-200">Become a Host</Link>
-            <Link to="/login" className="text-white text-sm hover:text-[#00bcd4] transition-colors duration-200">Login</Link>
-          </nav>
-          <span className="text-blue-200 text-xs">© {new Date().getFullYear()} Homigo. All rights reserved.</span>
-        </div>
-      </footer>
-    </div>
-  );
+// Dummy API function (replace with real API later)
+const getListings = async () => {
+  return [
+    { id: 1, title: "Cozy Apartment", description: "Near city center", price: 2000 },
+    { id: 2, title: "Modern Villa", description: "With swimming pool", price: 5000 },
+    { id: 3, title: "Mountain Retreat", description: "Peaceful and quiet", price: 3500 },
+  ];
 };
 
-export default Home;
+// Dummy ListingCard Component (replace with your real component)
+const ListingCard = ({ listing }) => (
+  <div className="bg-white rounded-xl shadow-md p-6">
+    <h3 className="text-xl font-bold text-[#003580]">{listing.title}</h3>
+    <p className="text-gray-600">{listing.description}</p>
+    <span className="text-[#0071c2] font-semibold">NRS {listing.price}</span>
+  </div>
+);
+
+// Logo Component
+const Logo = ({ size = "h-8 w-8", textSize = "text-2xl" }) => (
+  <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="flex items-center gap-2">
+    <HomeIcon className={`${size} text-white drop-shadow-lg`} />
+    <span className={`${textSize} font-bold text-white tracking-wide`}>Homigo</span>
+  </motion.div>
+);
+
+// NavLinks Component
+const NavLinks = ({ linkClass = "hover:text-[#00bcd4]" }) => (
+  <nav className="flex gap-8 font-medium">
+    <Link to="/listings" className={linkClass}>Listings</Link>
+    <Link to="/register" className={linkClass}>Become a Host</Link>
+    <Link to="/login" className={linkClass}>Login</Link>
+  </nav>
+);
+
+// FloatingSphere Component for 3D Globe
+const FloatingSphere = () => (
+  <Canvas camera={{ position: [0, 0, 4] }}>
+    <ambientLight intensity={0.5} />
+    <directionalLight position={[2, 2, 2]} />
+    <mesh scale={1.5}>
+      <sphereGeometry args={[1.2, 64, 64]} />
+      <MeshDistortMaterial color="#00bcd4" distort={0.3} speed={2} roughness={0.4} />
+    </mesh>
+    <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={1} />
+  </Canvas>
+);
+
+const Home = () => {
+  const [featuredListings, setFeaturedListings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchFeaturedListings = async () => {

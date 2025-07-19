@@ -68,6 +68,11 @@ export const listingsApi = {
     const response = await apiCall(`/listings/host/${hostId}`);
     return response.data.listings;
   },
+
+  async getListingsByHost(hostId) {
+    const response = await apiCall(`/listings/host/${hostId}`);
+    return response.data.listings;
+  },
 };
 
 // Bookings API

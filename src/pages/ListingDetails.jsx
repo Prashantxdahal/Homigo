@@ -93,12 +93,10 @@ const ListingDetails = () => {
 
     try {
       await bookingsApi.createBooking({
-        listingId: listing.id,
-        userId: user.id,
-        checkIn,
-        checkOut,
-        totalPrice,
-        status: 'confirmed',
+        listing_id: listing.id,
+        booking_date: new Date().toISOString().split('T')[0], // Today's date
+        check_in_date: checkIn,
+        check_out_date: checkOut,
       });
 
       alert('Booking confirmed! You can view your bookings in your profile.');
@@ -208,7 +206,8 @@ const ListingDetails = () => {
             <div id="booking-section" className="bg-white rounded-lg shadow-lg p-6 sticky top-8">
               <div className="mb-6">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-3xl font-bold text-[#003580]">${listing.price}</span>
+                  <span className="text-3xl font-bold text-[#003580]">NRS {listing.price}</span>
+                  <span className="text-gray-600">/night</span>
                   <span className="text-gray-600">/night</span>
                 </div>
                 {shouldShowBooking && (
@@ -274,7 +273,7 @@ const ListingDetails = () => {
                 <div className="mb-6 p-4 bg-gray-50 rounded-lg">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-700">Total Price</span>
-                    <span className="text-xl font-bold text-[#003580]">${totalPrice}</span>
+                    <span className="text-xl font-bold text-[#003580]">NRS {totalPrice}</span>
                   </div>
                   <p className="text-sm text-gray-600 mt-1">
                     {Math.ceil((new Date(checkOut).getTime() - new Date(checkIn).getTime()) / (1000 * 60 * 60 * 24))} nights

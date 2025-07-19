@@ -41,7 +41,7 @@ const ListingCard = ({ listing, showActions = false, onEdit, onDelete }) => {
             {listing.title}
           </h3>
           <div className="text-right">
-            <span className="text-[#003580] font-bold text-lg">${listing.price}</span>
+                <span className="text-[#003580] font-bold text-lg">NRS {listing.price}</span>
             <span className="text-gray-500 text-sm">/night</span>
           </div>
         </div>

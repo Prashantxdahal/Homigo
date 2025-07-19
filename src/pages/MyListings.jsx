@@ -111,11 +111,11 @@ const MyListings = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center">
               <div className="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                <span className="text-blue-600 font-bold">$</span>
+                <span className="text-blue-600 font-bold">NRS</span>
               </div>
               <div className="ml-4">
                 <p className="text-2xl font-bold text-gray-900">
-                  ${listings.reduce((sum, listing) => sum + listing.price, 0)}
+                  NRS {listings.reduce((sum, listing) => sum + listing.price, 0)}
                 </p>
                 <p className="text-gray-600">Total Value/Night</p>
               </div>

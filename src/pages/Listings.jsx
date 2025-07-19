@@ -23,9 +23,7 @@ const Listings = () => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const response = await listingsApi.getListings();
-        // Ensure we're getting the listings array from the response
-        const listingsData = response.data?.listings || [];
+        const listingsData = await listingsApi.getListings();
         console.log('Fetched listings:', listingsData); // For debugging
         setListings(listingsData);
         setFilteredListings(listingsData);
