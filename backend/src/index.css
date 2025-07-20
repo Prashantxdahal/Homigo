@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 <<<<<<< HEAD
-=======
 
 @layer base {
   html {
@@ -35,4 +34,5 @@
     @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
   }
 }
->>>>>>> development
+=======
+>>>>>>> 4e660ef7d0b484c4c2d7a613c01bacf2f9996b81
